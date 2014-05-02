@@ -1,0 +1,66 @@
+{% extends "base.html"%}
+{% load i18n %}
+{% block content %}
+	{% block convmenu %}
+		{% include "conversions/menu.html" %}
+	{% endblock %}
+	{% block convcontent %}
+		<h1>{% trans "Banner list"%}</h1>
+		<div id="convcontent">
+			<ul class="bannerfilter">
+				<li><a href="/conversions/bannerlist/">-- {% trans "all" %} --</a></li>
+				{% for campaign in campaigns %}
+				  <li><a href="/conversions/bannerlist/{{campaign.pk}}/">{{campaign.name}}</a> - {{campaign.web.name}}</li>				
+				{% endfor %}
+			</ul>
+			
+			<div class="bannerlist">
+			{% for banner in banners %}
+				{% ifchanged banner.campaign.name %}
+					<h2>{{banner.campaign.name}} <span class="smaller">- {{banner.campaign.web.name}}</span></h2>
+				{% endifchanged %}
+				<div class="singlebanner">
+					<h3>{{banner.name}}</h3>
+					{% ifequal banner.type 1 %}
+						<p><b>{% trans "Type"%}:</b>link</p>
+						<h4>{% trans "Example"%}:</h4>
+						<div class="example">
+							<a href="{{banner.campaign.target}}">{{banner.campaign.name}}</a>
+						</div>
+						<h4>{% trans "To put the banner on your site, use this html code"%}</h4>
+						<textarea rows="18" cols="60">&lt;iframe src=&quot;{{BASEURL}}/conversions/start/cid-{{banner.campaign.pk}}/pid-{{user.pk}}/&quot; width=&quot;1&quot; height=&quot;1&quot;&gt;&lt;/iframe&gt;
+
+&lt;a href=&quot;{{banner.campaign.target}}&quot;&gt;{{banner.campaign.name}}&lt;/a&gt;</textarea>
+					{% endifequal %}
+					{% ifequal banner.type 2 %}
+						<p><b>{% trans "Type"%}:</b>image</p>
+						<h4>{% trans "Example"%}:</h4>
+						<div class="example">
+							<a href="{{banner.campaign.target}}"><img src="{{BASEURL}}/site_media/{{banner.file}}" alt="{{banner.campaign.name}}" style="display:block;width:{{banner.size_x}}px;height:{{banner.size_y}}px;" /></a>
+						</div>
+						<h4>{% trans "To put the banner on your site, use this html code"%}</h4>
+						<textarea rows="18" cols="60">&lt;iframe src=&quot;{{BASEURL}}/conversions/start/cid-{{banner.campaign.pk}}/pid-{{user.pk}}/&quot; width=&quot;1&quot; height=&quot;1&quot;&gt;&lt;/iframe&gt;
+
+&lt;a href=&quot;{{banner.campaign.target}}&quot;&gt;&lt;img src=&quot;{{BASEURL}}/site_media/{{banner.file}}&quot; alt=&quot;{{banner.campaign.name}}&quot; style=&quot;display:block;width:{{banner.size_x}}px;height:{{banner.size_y}}px;&quot; /&gt;&lt;/a&gt;</textarea>
+					{% endifequal %}
+					{% ifequal banner.type 3 %}
+						<p><b>{% trans "Type"%}:</b>flash</p>
+						<h4>{% trans "Example"%}:</h4>
+						<div class="example">
+							<object width="{{banner.size_x}}" height="{{banner.size_y}}">
+							<param name="movie" value="{{BASEURL}}/site_media/{{banner.file}}">
+							<embed src="{{BASEURL}}/site_media/{{banner.file}}" width="{{banner.size_x}}" height="{{banner.size_y}}">
+							</embed>
+							</object>
+						</div>
+						<h4>{% trans "To put the banner on your site, use this html code"%}</h4>
+						<textarea rows="18" cols="60">&lt;iframe src=&quot;{{BASEURL}}/conversions/start/cid-{{banner.campaign.pk}}/pid-{{user.pk}}/&quot; width=&quot;1&quot; height=&quot;1&quot;&gt;&lt;/iframe&gt;
+
+&lt;object width=&quot;{{banner.size_x}}&quot; height=&quot;{{banner.size_y}}&quot;&gt;&lt;param name=&quot;movie&quot; value=&quot;{{BASEURL}}/site_media/{{banner.file}}&quot;&gt;&lt;embed src=&quot;{{BASEURL}}/site_media/{{banner.file}}&quot; width=&quot;{{banner.size_x}}&quot; height=&quot;{{banner.size_y}}&quot;&gt;&lt;/embed&gt;&lt;/object&gt;</textarea>
+					{% endifequal %}
+				</div>
+			{% endfor %}
+			</div>
+		</div>
+	{% endblock %}
+{% endblock %}

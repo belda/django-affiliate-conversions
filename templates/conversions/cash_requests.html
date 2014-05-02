@@ -1,0 +1,59 @@
+{% extends "base.html"%}
+{% load i18n %}
+{% block content %}
+	{% block convmenu %}
+		{% include "conversions/menu.html" %}
+	{% endblock %}
+	{% block convcontent %}
+		<h1>{% trans "Ballance"%}</h1>
+		<div id="convcontent">
+		  <div id="balance">
+		  	{% if staff %}
+		  		<h3>{% trans "Unrequested balances" %}</h3>
+		  		<table>
+		  			<tr><th>{% trans "partner" %}</th><th>{% trans "last cash request"%}</th><th>{% trans "balance" %}</th></tr>
+		  			{% for u in userbalances %}
+		  			  <tr><td>{{u.username}}</td><td>{{u.lastcr.payed_ts|date:"j.n.Y G:i"}}</td><td>{{u.balance}}</td></tr>
+		  			{% endfor %}
+		  		</table>
+		  	{% else %}
+		  		<h3>{% trans "Uncashed balance" %}</h3>
+		  		<p>{% trans "Your actual balance is "%}<b>{{balance}}</b>. 
+		  			{% if lastcr %}{% trans "Your last cashing request was on "%}{{lastcr.payed_ts|date:"j.n.Y G:i"}}.{% endif %}</p>
+		  		<p>{% trans "You can cash your money every "%}{{MINDAYS}}{% trans " days and once it reaches "%}{{MINCASH}}.</p>
+		  		{% if cancash %}<p><a href="/conversions/cash/">{% trans "Cash the money" %}</a></p>{% endif %}
+		  	{% endif %}
+		  </div>
+		  <div id="pendingrequests">
+		  	<h3>{% trans "Pending requests" %}</h3>
+		  	<table>
+		  		<tr><th>{% trans "id" %}</th>
+		  			{% if staff %}<th>{% trans "partner" %}</th>{% endif %}
+		  			<th>{% trans "date"%}</th><th>{% trans "amount"%}</th><th>{% trans "payed"%}</th></tr>
+		  		{% for r in unpayed_requests %}
+		  		  <tr><td>{{r.id}}</td>
+		  		  		{% if staff %}<td>{{r.partner.username}}</td>{% endif %}
+		  		  		<td>{{r.request_ts|date:"j.n.Y G:i"}}</td><td>{{r.amount}}</td>
+		  		  		<td>{% if staff %}<a href="/conversions/pay/{{r.pk}}/">{% trans "Mark payed"%}</a>{% else %}{%trans "awaiting"%}{% endif %}</td>
+		  		  </tr>
+		  		{% endfor %}
+		  	</table>
+		  </div>
+		  <div id="cashed">
+		  	<h3>{% trans "Cashed requests" %}</h3>
+		  	<table>
+		  		<tr><th>{% trans "id" %}</th>
+		  			{% if staff %}<th>{% trans "partner" %}</th>{% endif %}
+		  			<th>{% trans "date"%}</th><th>{% trans "amount"%}</th><th>{% trans "payed"%}</th></tr>
+		  		{% for r in payed_requests %}
+		  		  <tr><td>{{r.id}}</td>
+		  		  		{% if staff %}<td>{{r.partner.username}}</td>{% endif %}
+		  		  		<td>{{r.request_ts|date:"j.n.Y G:i"}}</td><td>{{r.amount}}</td>
+		  		  		<td>{{r.payed_ts|date:"j.n.Y G:i"}}</td>
+		  		  </tr>
+		  		{% endfor %}
+		  	</table>
+		  </div>
+		</div>
+	{% endblock %}
+{% endblock %}
